@@ -381,11 +381,6 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: '/project/:ref/sql',
-        destination: '/project/:ref/sql/new',
-        permanent: true,
-      },
-      {
         permanent: true,
         source: '/project/:ref/reports/linter',
         destination: '/project/:ref/database/linter',
@@ -460,6 +455,11 @@ const nextConfig = {
         source: '/project/:ref/settings/warehouse',
         destination: '/project/:ref/settings/general',
       },
+      {
+        permanent: true,
+        source: '/project/:ref/settings/functions',
+        destination: '/project/:ref/functions/secrets',
+      },
       ...(process.env.NEXT_PUBLIC_BASE_PATH?.length
         ? [
             {
@@ -489,7 +489,7 @@ const nextConfig = {
             key: 'Strict-Transport-Security',
             value:
               process.env.NEXT_PUBLIC_IS_PLATFORM === 'true' && process.env.VERCEL === '1'
-                ? 'max-age=31536000'
+                ? 'max-age=31536000; includeSubDomains; preload'
                 : '',
           },
           {
@@ -518,6 +518,10 @@ const nextConfig = {
       {
         source: '/favicon/:slug*',
         headers: [{ key: 'cache-control', value: 'public, max-age=86400' }],
+      },
+      {
+        source: '/(.*).ts',
+        headers: [{ key: 'content-type', value: 'text/typescript' }],
       },
     ]
   },
