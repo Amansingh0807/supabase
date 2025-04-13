@@ -10,7 +10,6 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { PopoverSeparator } from '@ui/components/shadcn/ui/popover'
-import { components } from 'api-types'
 import { useParams } from 'common'
 import {
   FreeProjectLimitWarning,
@@ -25,6 +24,7 @@ import { SPECIAL_CHARS_REGEX } from 'components/interfaces/ProjectCreation/Proje
 import { RegionSelector } from 'components/interfaces/ProjectCreation/RegionSelector'
 import { SecurityOptions } from 'components/interfaces/ProjectCreation/SecurityOptions'
 import { SpecialSymbolsCallout } from 'components/interfaces/ProjectCreation/SpecialSymbolsCallout'
+import DefaultLayout from 'components/layouts/DefaultLayout'
 import { WizardLayoutWithoutAuth } from 'components/layouts/WizardLayout'
 import DisabledWarningDueToIncident from 'components/ui/DisabledWarningDueToIncident'
 import Panel from 'components/ui/Panel'
@@ -35,9 +35,8 @@ import { useOverdueInvoicesQuery } from 'data/invoices/invoices-overdue-query'
 import { useDefaultRegionQuery } from 'data/misc/get-default-region-query'
 import { useFreeProjectLimitCheckQuery } from 'data/organizations/free-project-limit-check-query'
 import { useOrganizationsQuery } from 'data/organizations/organizations-query'
-import { instanceSizeSpecs } from 'data/projects/new-project.constants'
+import { DesiredInstanceSize, instanceSizeSpecs } from 'data/projects/new-project.constants'
 import {
-  DbInstanceSize,
   ProjectCreateVariables,
   useProjectCreateMutation,
 } from 'data/projects/project-create-mutation'
@@ -82,10 +81,9 @@ import {
 } from 'ui'
 import { Admonition } from 'ui-patterns/admonition'
 import { Input } from 'ui-patterns/DataInputs/Input'
+import ConfirmationModal from 'ui-patterns/Dialogs/ConfirmationModal'
 import { FormItemLayout } from 'ui-patterns/form/FormItemLayout/FormItemLayout'
 import { InfoTooltip } from 'ui-patterns/info-tooltip'
-
-type DesiredInstanceSize = components['schemas']['DesiredInstanceSize']
 
 const sizes: DesiredInstanceSize[] = [
   'micro',
@@ -99,6 +97,8 @@ const sizes: DesiredInstanceSize[] = [
   '12xlarge',
   '16xlarge',
 ]
+
+const sizesWithNoCostConfirmationRequired: DesiredInstanceSize[] = ['micro', 'small']
 
 const FormSchema = z.object({
   organization: z.string({
@@ -146,6 +146,9 @@ const Wizard: NextPageWithLayout = () => {
 
   const [passwordStrengthMessage, setPasswordStrengthMessage] = useState('')
   const [passwordStrengthWarning, setPasswordStrengthWarning] = useState('')
+
+  const [isComputeCostsConfirmationModalVisible, setIsComputeCostsConfirmationModalVisible] =
+    useState(false)
 
   const { data: organizations, isSuccess: isOrganizationsSuccess } = useOrganizationsQuery()
   const currentOrg = organizations?.find((o: any) => o.slug === slug)
@@ -201,6 +204,9 @@ const Wizard: NextPageWithLayout = () => {
     onSuccess: (res) => {
       sendEvent({
         action: 'project_creation_simple_version_submitted',
+        properties: {
+          instanceSize: form.getValues('instanceSize'),
+        },
       })
       router.push(`/project/${res.ref}/building`)
     },
@@ -290,6 +296,23 @@ const Wizard: NextPageWithLayout = () => {
     const password = generateStrongPassword()
     form.setValue('dbPass', password)
     delayedCheckPasswordStrength(password)
+  }
+
+  const onSubmitWithComputeCostsConfirmation = async (values: z.infer<typeof FormSchema>) => {
+    if (
+      values.instanceSize &&
+      !sizesWithNoCostConfirmationRequired.includes(values.instanceSize as DesiredInstanceSize)
+    ) {
+      sendEvent({
+        action: 'project_creation_simple_version_confirm_modal_opened',
+        properties: {
+          instanceSize: values.instanceSize,
+        },
+      })
+      setIsComputeCostsConfirmationModalVisible(true)
+    } else {
+      await onSubmit(values)
+    }
   }
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
@@ -384,7 +407,7 @@ const Wizard: NextPageWithLayout = () => {
   const availableComputeCredits = organizationProjects.length === 0 ? 10 : 0
 
   const additionalMonthlySpend =
-    instanceSizeSpecs[instanceSize as DbInstanceSize]!.priceMonthly - availableComputeCredits
+    instanceSizeSpecs[instanceSize as DesiredInstanceSize]!.priceMonthly - availableComputeCredits
 
   // TODO: Remove this after project creation experiment as it delays rendering
   if (
@@ -397,7 +420,7 @@ const Wizard: NextPageWithLayout = () => {
 
   return (
     <Form_Shadcn_ {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmitWithComputeCostsConfirmation)}>
         <Panel
           loading={!isOrganizationsSuccess || isLoadingFreeProjectLimitCheck}
           title={
@@ -650,7 +673,7 @@ const Wizard: NextPageWithLayout = () => {
                                   <span className="text-foreground-lighter line-through">
                                     $
                                     {
-                                      instanceSizeSpecs[instanceSize as DbInstanceSize]!
+                                      instanceSizeSpecs[instanceSize as DesiredInstanceSize]!
                                         .priceMonthly
                                     }
                                   </span>
@@ -937,6 +960,27 @@ const Wizard: NextPageWithLayout = () => {
             )}
           </>
         </Panel>
+
+        <ConfirmationModal
+          size="large"
+          loading={false}
+          visible={isComputeCostsConfirmationModalVisible}
+          title={<>Confirm compute costs</>}
+          confirmLabel="Confirm"
+          onCancel={() => setIsComputeCostsConfirmationModalVisible(false)}
+          onConfirm={async () => {
+            const values = form.getValues()
+            await onSubmit(values)
+            setIsComputeCostsConfirmationModalVisible(false)
+          }}
+          variant={'warning'}
+        >
+          <p className="text-sm text-foreground-light">
+            Launching a project on compute size "{instanceLabel(instanceSize)}" increases your
+            monthly compute costs by ${additionalMonthlySpend}. By clicking "Confirm", you agree to
+            the additional costs and the project creation starts.
+          </p>
+        </ConfirmationModal>
       </form>
     </Form_Shadcn_>
   )
@@ -949,11 +993,11 @@ const Wizard: NextPageWithLayout = () => {
  * Needs to be in the API in the future [kevin]
  */
 const monthlyInstancePrice = (instance: string | undefined): number => {
-  return instanceSizeSpecs[instance as DbInstanceSize]?.priceMonthly || 10
+  return instanceSizeSpecs[instance as DesiredInstanceSize]?.priceMonthly || 10
 }
 
 const instanceLabel = (instance: string | undefined): string => {
-  return instanceSizeSpecs[instance as DbInstanceSize]?.label || 'Micro'
+  return instanceSizeSpecs[instance as DesiredInstanceSize]?.label || 'Micro'
 }
 
 const PageLayout = withAuth(({ children }: PropsWithChildren) => {
@@ -969,6 +1013,10 @@ const PageLayout = withAuth(({ children }: PropsWithChildren) => {
   )
 })
 
-Wizard.getLayout = (page) => <PageLayout>{page}</PageLayout>
+Wizard.getLayout = (page) => (
+  <DefaultLayout headerTitle="New project">
+    <PageLayout>{page}</PageLayout>
+  </DefaultLayout>
+)
 
 export default Wizard

@@ -58,7 +58,7 @@ export const Index: Record<string, any> = {
     "dropzone-nextjs": {
       name: "dropzone-nextjs",
       type: "registry:component",
-      registryDependencies: ["button","tooltip","progress"],
+      registryDependencies: ["button"],
       component: React.lazy(() => import("@/registry/default/blocks/dropzone/components/dropzone.tsx")),
       source: "",
       files: ["registry/default/blocks/dropzone/components/dropzone.tsx","registry/default/blocks/dropzone/hooks/use-supabase-upload.ts","registry/default/clients/nextjs/lib/supabase/client.ts","registry/default/clients/nextjs/lib/supabase/middleware.ts","registry/default/clients/nextjs/lib/supabase/server.ts"],
@@ -70,7 +70,7 @@ export const Index: Record<string, any> = {
     "dropzone-react": {
       name: "dropzone-react",
       type: "registry:component",
-      registryDependencies: ["button","tooltip","progress"],
+      registryDependencies: ["button"],
       component: React.lazy(() => import("@/registry/default/blocks/dropzone/components/dropzone.tsx")),
       source: "",
       files: ["registry/default/blocks/dropzone/components/dropzone.tsx","registry/default/blocks/dropzone/hooks/use-supabase-upload.ts","registry/default/clients/react/lib/supabase/client.ts"],
@@ -82,7 +82,7 @@ export const Index: Record<string, any> = {
     "dropzone-react-router": {
       name: "dropzone-react-router",
       type: "registry:component",
-      registryDependencies: ["button","tooltip","progress"],
+      registryDependencies: ["button"],
       component: React.lazy(() => import("@/registry/default/blocks/dropzone/components/dropzone.tsx")),
       source: "",
       files: ["registry/default/blocks/dropzone/components/dropzone.tsx","registry/default/blocks/dropzone/hooks/use-supabase-upload.ts","registry/default/clients/react-router/lib/supabase/client.ts","registry/default/clients/react-router/lib/supabase/server.ts"],
@@ -94,7 +94,7 @@ export const Index: Record<string, any> = {
     "dropzone-tanstack": {
       name: "dropzone-tanstack",
       type: "registry:component",
-      registryDependencies: ["button","tooltip","progress"],
+      registryDependencies: ["button"],
       component: React.lazy(() => import("@/registry/default/blocks/dropzone/components/dropzone.tsx")),
       source: "",
       files: ["registry/default/blocks/dropzone/components/dropzone.tsx","registry/default/blocks/dropzone/hooks/use-supabase-upload.ts","registry/default/clients/tanstack/lib/supabase/client.ts","registry/default/clients/tanstack/lib/supabase/server.ts"],
@@ -242,6 +242,54 @@ export const Index: Record<string, any> = {
       component: React.lazy(() => import("@/registry/default/blocks/realtime-avatar-stack/components/avatar-stack.tsx")),
       source: "",
       files: ["registry/default/blocks/realtime-avatar-stack/components/avatar-stack.tsx","registry/default/blocks/realtime-avatar-stack/components/realtime-avatar-stack.tsx","registry/default/blocks/realtime-avatar-stack/hooks/use-realtime-presence-room.ts","registry/default/blocks/current-user-avatar/hooks/use-current-user-name.ts","registry/default/blocks/current-user-avatar/hooks/use-current-user-image.ts","registry/default/clients/tanstack/lib/supabase/client.ts","registry/default/clients/tanstack/lib/supabase/server.ts"],
+      category: "undefined",
+      subcategory: "undefined",
+      chunks: []
+    }
+    ,
+    "realtime-chat-nextjs": {
+      name: "realtime-chat-nextjs",
+      type: "registry:component",
+      registryDependencies: ["input","button"],
+      component: React.lazy(() => import("@/registry/default/blocks/realtime-chat/components/chat-message.tsx")),
+      source: "",
+      files: ["registry/default/blocks/realtime-chat/components/chat-message.tsx","registry/default/blocks/realtime-chat/components/realtime-chat.tsx","registry/default/blocks/realtime-chat/hooks/use-realtime-chat.tsx","registry/default/blocks/realtime-chat/hooks/use-chat-scroll.tsx","registry/default/clients/nextjs/lib/supabase/client.ts","registry/default/clients/nextjs/lib/supabase/middleware.ts","registry/default/clients/nextjs/lib/supabase/server.ts"],
+      category: "undefined",
+      subcategory: "undefined",
+      chunks: []
+    }
+    ,
+    "realtime-chat-react": {
+      name: "realtime-chat-react",
+      type: "registry:component",
+      registryDependencies: ["input","button"],
+      component: React.lazy(() => import("@/registry/default/blocks/realtime-chat/components/chat-message.tsx")),
+      source: "",
+      files: ["registry/default/blocks/realtime-chat/components/chat-message.tsx","registry/default/blocks/realtime-chat/components/realtime-chat.tsx","registry/default/blocks/realtime-chat/hooks/use-realtime-chat.tsx","registry/default/blocks/realtime-chat/hooks/use-chat-scroll.tsx","registry/default/clients/react/lib/supabase/client.ts"],
+      category: "undefined",
+      subcategory: "undefined",
+      chunks: []
+    }
+    ,
+    "realtime-chat-react-router": {
+      name: "realtime-chat-react-router",
+      type: "registry:component",
+      registryDependencies: ["input","button"],
+      component: React.lazy(() => import("@/registry/default/blocks/realtime-chat/components/chat-message.tsx")),
+      source: "",
+      files: ["registry/default/blocks/realtime-chat/components/chat-message.tsx","registry/default/blocks/realtime-chat/components/realtime-chat.tsx","registry/default/blocks/realtime-chat/hooks/use-realtime-chat.tsx","registry/default/blocks/realtime-chat/hooks/use-chat-scroll.tsx","registry/default/clients/react-router/lib/supabase/client.ts","registry/default/clients/react-router/lib/supabase/server.ts"],
+      category: "undefined",
+      subcategory: "undefined",
+      chunks: []
+    }
+    ,
+    "realtime-chat-tanstack": {
+      name: "realtime-chat-tanstack",
+      type: "registry:component",
+      registryDependencies: ["input","button"],
+      component: React.lazy(() => import("@/registry/default/blocks/realtime-chat/components/chat-message.tsx")),
+      source: "",
+      files: ["registry/default/blocks/realtime-chat/components/chat-message.tsx","registry/default/blocks/realtime-chat/components/realtime-chat.tsx","registry/default/blocks/realtime-chat/hooks/use-realtime-chat.tsx","registry/default/blocks/realtime-chat/hooks/use-chat-scroll.tsx","registry/default/clients/tanstack/lib/supabase/client.ts","registry/default/clients/tanstack/lib/supabase/server.ts"],
       category: "undefined",
       subcategory: "undefined",
       chunks: []

@@ -1,6 +1,7 @@
 import { OAuthScope } from '@supabase/shared-types/out/constants'
 import { ChevronDown } from 'lucide-react'
 import { Dispatch, PropsWithChildren, SetStateAction } from 'react'
+
 import {
   Button,
   DropdownMenu,
@@ -72,7 +73,7 @@ const Scope = ({
         <span className="text-foreground text-sm">{title}</span>
         <span className="text-foreground-light text-xs">{description}</span>
       </div>
-      <DropdownMenu>
+      <DropdownMenu modal={true}>
         <DropdownMenuTrigger asChild>
           <Button type="default" iconRight={<ChevronDown />}>
             <p>{accessDescription}</p>

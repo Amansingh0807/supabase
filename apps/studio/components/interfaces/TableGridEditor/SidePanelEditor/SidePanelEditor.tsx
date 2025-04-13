@@ -23,7 +23,7 @@ import { useTableRowUpdateMutation } from 'data/table-rows/table-row-update-muta
 import { tableKeys } from 'data/tables/keys'
 import { getTables } from 'data/tables/tables-query'
 import { useUrlState } from 'hooks/ui/useUrlState'
-import { useGetImpersonatedRole } from 'state/role-impersonation-state'
+import { useGetImpersonatedRoleState } from 'state/role-impersonation-state'
 import { useTableEditorStateSnapshot } from 'state/table-editor'
 import { createTabId, renameTab } from 'state/tabs'
 import type { Dictionary } from 'types'
@@ -103,7 +103,7 @@ const SidePanelEditor = ({
     onError: () => {},
   })
 
-  const getImpersonatedRole = useGetImpersonatedRole()
+  const getImpersonatedRoleState = useGetImpersonatedRoleState()
 
   const saveRow = async (
     payload: any,
@@ -124,7 +124,7 @@ const SidePanelEditor = ({
           table: selectedTable,
           payload,
           enumArrayColumns,
-          impersonatedRole: getImpersonatedRole(),
+          roleImpersonationState: getImpersonatedRoleState(),
         })
       } catch (error: any) {
         saveRowError = error
@@ -141,7 +141,7 @@ const SidePanelEditor = ({
               configuration,
               payload,
               enumArrayColumns,
-              impersonatedRole: getImpersonatedRole(),
+              roleImpersonationState: getImpersonatedRoleState(),
             })
           } catch (error: any) {
             saveRowError = error
@@ -482,7 +482,9 @@ const SidePanelEditor = ({
         }
 
         if (hasError) {
-          toast(`Table ${table.name} has been updated, but there were some errors`, { id: toastId })
+          toast.warning(
+            `Table ${table.name} has been updated but there were some errors. Please check these errors separately.`
+          )
         } else {
           if (isTableEditorTabsEnabled && ref && payload.name) {
             // [Joshen] Only table entities can be updated via the dashboard
@@ -588,6 +590,7 @@ const SidePanelEditor = ({
           row={snap.sidePanel?.type === 'row' ? snap.sidePanel.row : undefined}
           selectedTable={selectedTable}
           visible={snap.sidePanel?.type === 'row'}
+          editable={editable}
           closePanel={onClosePanel}
           saveChanges={saveRow}
           updateEditorDirty={() => setIsEdited(true)}
