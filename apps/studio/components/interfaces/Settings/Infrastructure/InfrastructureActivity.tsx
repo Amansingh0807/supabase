@@ -36,6 +36,7 @@ import { TIME_PERIODS_BILLING, TIME_PERIODS_REPORTS } from 'lib/constants/metric
 import { useDatabaseSelectorStateSnapshot } from 'state/database-selector'
 import { Admonition } from 'ui-patterns/admonition'
 import { INFRA_ACTIVITY_METRICS } from './Infrastructure.constants'
+import { useShowNewReplicaPanel } from './InfrastructureConfiguration/use-show-new-replica'
 
 const NON_DEDICATED_IO_RESOURCES = [
   'ci_micro',
@@ -56,13 +57,15 @@ const InfrastructureActivity = () => {
   const { data: subscription, isLoading: isLoadingSubscription } = useOrgSubscriptionQuery({
     orgSlug: organization?.slug,
   })
-  const isFreePlan = subscription?.plan?.id === 'free'
+  const isFreePlan = organization?.plan?.id === 'free'
 
   const { data: resourceWarnings } = useResourceWarningsQuery()
   const projectResourceWarnings = resourceWarnings?.find((x) => x.project === projectRef)
 
   const { data: addons } = useProjectAddonsQuery({ projectRef })
   const selectedAddons = addons?.selected_addons ?? []
+
+  const { showNewReplicaPanel, setShowNewReplicaPanel } = useShowNewReplicaPanel()
 
   const { computeInstance } = getAddons(selectedAddons)
   const hasDedicatedIOResources =
@@ -94,9 +97,9 @@ const InfrastructureActivity = () => {
   }, [dateRange, subscription])
 
   const upgradeUrl =
-    subscription === undefined
+    organization === undefined
       ? `/`
-      : subscription.plan.id === 'free'
+      : organization.plan.id === 'free'
         ? `/org/${organization?.slug ?? '[slug]'}/billing#subscription`
         : `/project/${projectRef}/settings/addons`
 
@@ -112,7 +115,7 @@ const InfrastructureActivity = () => {
       // LF seems to have an issue with the milliseconds, causes infinite loading sometimes
       return new Date(dateRange?.period_start?.date ?? 0).toISOString().slice(0, -5) + 'Z'
     }
-  }, [dateRange, subscription])
+  }, [dateRange])
 
   const endDate = useMemo(() => {
     if (dateRange?.period_end?.date === 'Invalid Date') return undefined
@@ -127,7 +130,7 @@ const InfrastructureActivity = () => {
       // LF seems to have an issue with the milliseconds, causes infinite loading sometimes
       return new Date(dateRange.period_end.date ?? 0).toISOString().slice(0, -5) + 'Z'
     }
-  }, [dateRange, subscription])
+  }, [dateRange])
 
   // Switch to hourly interval, if the timeframe is <48 hours
   let interval: '1d' | '1h' = '1d'
@@ -211,7 +214,11 @@ const InfrastructureActivity = () => {
       </ScaffoldContainer>
       <ScaffoldContainer className="sticky top-0 py-6 border-b bg-studio z-10">
         <div className="flex items-center gap-x-4">
-          <DatabaseSelector />
+          <DatabaseSelector
+            onCreateReplicaClick={() => {
+              setShowNewReplicaPanel(true)
+            }}
+          />
           {!isLoadingSubscription && (
             <>
               <DateRangePicker

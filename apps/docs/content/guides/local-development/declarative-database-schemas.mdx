@@ -42,6 +42,12 @@ create table "employees" (
   </StepHikeCompact.Step>
 </StepHikeCompact>
 
+<Admonition type="note">
+
+Make sure your local database is stopped before diffing your schema.
+
+</Admonition>
+
 <StepHikeCompact>
 
   <StepHikeCompact.Step step={2}>
@@ -64,17 +70,11 @@ supabase db diff -f create_employees_table
   </StepHikeCompact.Step>
 </StepHikeCompact>
 
-<Admonition type="note">
-
-Make sure your local database is stopped before diffing your schema.
-
-</Admonition>
-
 <StepHikeCompact>
 
   <StepHikeCompact.Step step={3}>
-    <StepHikeCompact.Details title="Start the local database">
-      The new migration file will be used when starting the database locally so you can validate your schema using the local Dashboard.
+    <StepHikeCompact.Details title="Start the local database and apply migrations">
+      Start the local database first. Then, apply the migration manually to see your schema changes in the local Dashboard.
     </StepHikeCompact.Details>
 
     <StepHikeCompact.Code>
@@ -83,6 +83,7 @@ Make sure your local database is stopped before diffing your schema.
 
 ```bash name=Terminal
 supabase start
+supabase migration up
 ```
 
 </$CodeTabs>

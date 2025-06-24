@@ -418,7 +418,7 @@ const OneTapComponent = () => {
             }
           },
           nonce: hashedNonce,
-          // with chrome's removal of third-party cookiesm, we need to use FedCM instead (https://developers.google.com/identity/gsi/web/guides/fedcm-migration)
+          // with chrome's removal of third-party cookies, we need to use FedCM instead (https://developers.google.com/identity/gsi/web/guides/fedcm-migration)
           use_fedcm_for_prompt: true,
         })
         google.accounts.id.prompt() // Display the One Tap UI
@@ -694,9 +694,9 @@ val supabaseClient = createSupabaseClient(
     supabaseUrl = "SUPABASE_URL",
     supabaseKey = "SUPABASE_KEY"
 ) {
-    install(GoTrue)
+    install(Auth)
     install(ComposeAuth) {
-        nativeGoogleLogin("WEB_GOOGLE_CLIENT_ID") //Use the Web Client ID, not the Android one!
+        googleNativeLogin("WEB_GOOGLE_CLIENT_ID") //Use the Web Client ID, not the Android one!
     }
 }
 ```

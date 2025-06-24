@@ -1,5 +1,6 @@
 import { PermissionAction } from '@supabase/shared-types/out/constants'
 import dayjs from 'dayjs'
+import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 
 import { useParams } from 'common'
@@ -8,17 +9,14 @@ import {
   ScaffoldContainerLegacy,
   ScaffoldTitle,
 } from 'components/layouts/Scaffold'
-
 import AlertError from 'components/ui/AlertError'
 import DateRangePicker from 'components/ui/DateRangePicker'
-import { DocsButton } from 'components/ui/DocsButton'
 import NoPermission from 'components/ui/NoPermission'
 import ShimmeringLoader from 'components/ui/ShimmeringLoader'
 import { useProjectsQuery } from 'data/projects/projects-query'
 import { useOrgSubscriptionQuery } from 'data/subscriptions/org-subscription-query'
 import { useCheckPermissions } from 'hooks/misc/useCheckPermissions'
 import { useSelectedOrganization } from 'hooks/misc/useSelectedOrganization'
-import { useNewLayout } from 'components/interfaces/App/FeaturePreview/FeaturePreviewContext'
 import { TIME_PERIODS_BILLING, TIME_PERIODS_REPORTS } from 'lib/constants/metrics'
 import { cn, Listbox } from 'ui'
 import { Admonition } from 'ui-patterns'
@@ -28,11 +26,8 @@ import Bandwidth from './Bandwidth'
 import Compute from './Compute'
 import SizeAndCounts from './SizeAndCounts'
 import TotalUsage from './TotalUsage'
-import Link from 'next/link'
 
 const Usage = () => {
-  const newLayoutPreview = useNewLayout()
-
   const { slug, projectRef } = useParams()
   const [dateRange, setDateRange] = useState<any>()
   const [selectedProjectRef, setSelectedProjectRef] = useState<string>()
@@ -121,11 +116,9 @@ const Usage = () => {
 
   return (
     <>
-      {newLayoutPreview && (
-        <ScaffoldContainerLegacy>
-          <ScaffoldTitle>Usage</ScaffoldTitle>
-        </ScaffoldContainerLegacy>
-      )}
+      <ScaffoldContainerLegacy>
+        <ScaffoldTitle>Usage</ScaffoldTitle>
+      </ScaffoldContainerLegacy>
       <div className="sticky top-0 border-b bg-studio z-[1] overflow-hidden ">
         <ScaffoldContainer className="">
           <div className="py-4 flex items-center space-x-4">
@@ -202,7 +195,7 @@ const Usage = () => {
             title="Usage filtered by project"
             description={
               <div>
-                You are currently viewing usage for the "$
+                You are currently viewing usage for the "
                 {selectedProject?.name || selectedProjectRef}" project. Supabase uses{' '}
                 <Link
                   href="/docs/guides/platform/billing-on-supabase#organization-based-billing"
